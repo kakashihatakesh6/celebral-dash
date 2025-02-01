@@ -1,101 +1,236 @@
-import Image from "next/image";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import type { Service, CartItem, Customer, Order } from "./lib/types"
+import ServiceList from "./components/ServiceList"
+import Cart from "./components/Cart"
+import CustomerForm from "./components/CustomerForm"
+import Receipt from "./components/Reciept"
+import CartButton from "./components/CartButton"
+import { loadRazorpay } from "./lib/razorpay"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+
+const sampleServices: Service[] = [
+  { id: "1", name: "Haircut", price: 30, description: "Standard haircut" },
+  { id: "2", name: "Manicure", price: 25, description: "Basic manicure" },
+  { id: "3", name: "Massage", price: 60, description: "60-minute massage" },
+  { id: "4", name: "Facial", price: 45, description: "Refreshing facial treatment" },
+  { id: "5", name: "Pedicure", price: 35, description: "Relaxing pedicure" },
+  { id: "6", name: "Hair Coloring", price: 80, description: "Full hair coloring service" },
+]
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [customer, setCustomer] = useState<Customer>({ name: "", email: "", phone: "" })
+  const [showCart, setShowCart] = useState(false)
+  const [showCustomerForm, setShowCustomerForm] = useState(false)
+  const [order, setOrder] = useState<Order | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    loadRazorpay()
+  }, [])
+
+  const addToCart = (service: Service) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === service.id)
+      if (existingItem) {
+        return prevItems.map((item) => (item.id === service.id ? { ...item, quantity: item.quantity + 1 } : item))
+      }
+      return [...prevItems, { ...service, quantity: 1 }]
+    })
+    setShowCart(true)
+    toast.success(`Added ${service.name} to cart`)
+  }
+
+  const updateQuantity = (id: string, quantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item)),
+    )
+  }
+
+  const removeItem = (id: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
+    toast.info("Item removed from cart")
+  }
+
+  const handleProceed = () => {
+    if (cartItems.length === 0) {
+      toast.error("Please add items to the cart before proceeding.")
+      return
+    }
+    setShowCustomerForm(true)
+    setShowCart(false)
+  }
+
+  const handlePayment = async () => {
+    if (!customer.name || !customer.email || !customer.phone) {
+      toast.error("Please fill in all customer details before proceeding to payment.")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100,
+          currency: "INR",
+          receipt: `receipt_${Date.now()}`,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong")
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
+        name: "POS System",
+        description: "Payment for services",
+        order_id: data.id,
+        handler: (response: any) => {
+          handlePaymentSuccess(response)
+        },
+        prefill: {
+          name: customer.name,
+          email: customer.email,
+          contact: customer.phone,
+        },
+        theme: {
+          color: "#3B82F6",
+        },
+      }
+
+      const paymentObject = new (window as any).Razorpay(options)
+      paymentObject.open()
+    } catch (error) {
+      console.error("Payment initiation failed:", error)
+      toast.error("Failed to initiate payment. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handlePaymentSuccess = async (response: any) => {
+    try {
+      const verificationResponse = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+        }),
+      })
+
+      const verificationData = await verificationResponse.json()
+
+      if (!verificationResponse.ok) {
+        throw new Error(verificationData.message || "Payment verification failed")
+      }
+
+      const newOrder: Order = {
+        id: response.razorpay_order_id,
+        customer,
+        items: cartItems,
+        total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        paymentId: response.razorpay_payment_id,
+        createdAt: new Date().toISOString(),
+        status: "success",
+      }
+
+      // Save order to JSON file
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newOrder),
+      })
+
+      setOrder(newOrder)
+      setShowCustomerForm(false)
+      setCartItems([])
+      setCustomer({ name: "", email: "", phone: "" })
+      toast.success("Payment successful!")
+    } catch (error) {
+      console.error("Payment verification failed:", error)
+      toast.error("Payment verification failed. Please contact support.")
+    }
+  }
+
+  return (
+    <main className="container mx-auto px-4 py-8 relative">
+      <h1 className="text-3xl font-bold mb-8">POS System</h1>
+      <CartButton itemCount={cartItems.length} onClick={() => setShowCart(true)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Services</h2>
+          <ServiceList services={sampleServices} addToCart={addToCart} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </div>
+      <Cart
+        items={cartItems}
+        updateQuantity={updateQuantity}
+        removeItem={removeItem}
+        onClose={() => setShowCart(false)}
+        onProceed={handleProceed}
+        isOpen={showCart}
+      />
+      {showCustomerForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative">
+            <button
+              onClick={() => setShowCustomerForm(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+            <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+            <div className="mb-4">
+              <h3 className="font-semibold">Items:</h3>
+              {cartItems.map((item) => (
+                <div key={item.id} className="flex justify-between">
+                  <span>
+                    {item.name} x{item.quantity}
+                  </span>
+                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+            <CustomerForm customer={customer} setCustomer={setCustomer} />
+            <button
+              onClick={handlePayment}
+              disabled={isLoading}
+              className="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors disabled:bg-gray-400"
+            >
+              {isLoading ? "Processing..." : "Proceed to Payment"}
+            </button>
+          </div>
+        </div>
+      )}
+      {order && <Receipt order={order} onClose={() => setOrder(null)} />}
+      <div className="mt-8 text-center">
+        <Link href="/payment-history" className="text-blue-500 hover:text-blue-700">
+          View Payment History
+        </Link>
+      </div>
+      <ToastContainer position="bottom-right" autoClose={3000} />
+    </main>
+  )
 }
+
