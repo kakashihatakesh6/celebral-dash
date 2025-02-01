@@ -62,7 +62,7 @@ export default function ReceiptPage() {
         >
           <span>← Back</span>
         </button>
-        <h1 className="text-3xl font-bold">Receipt</h1>
+        <h1 className="text-3xl font-bold ml-32">Receipt</h1>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
         <div className="mb-4">

@@ -33,4 +33,26 @@ export async function GET() {
       { status: 500 }
     )
   }
-} 
+}
+
+export async function POST(request: Request) {
+  try {
+    await ensureDataDirectory()
+    const order = await request.json()
+
+    let orders = []
+    try {
+      const fileContent = await fs.readFile(dataFilePath, 'utf-8')
+      orders = JSON.parse(fileContent)
+    } catch {
+      // If file doesn't exist or is empty, start with empty array
+    }
+
+    orders.push(order)
+    await fs.writeFile(dataFilePath, JSON.stringify(orders, null, 2))
+    
+    return NextResponse.json(order)
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+  }
+}
