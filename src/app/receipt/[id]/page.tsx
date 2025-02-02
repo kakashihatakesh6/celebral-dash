@@ -57,7 +57,8 @@ export default function ReceiptPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center mb-8">
         <button
-          onClick={() => router.back()}
+          // onClick={() => router.back()}
+          onClick={() => router.push('/payment-history')}
           className="mr-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center"
         >
           <span>← Back</span>

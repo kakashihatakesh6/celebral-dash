@@ -253,8 +253,8 @@ export default function Home() {
         )}
         {order && <Receipt order={order} onClose={() => setOrder(null)} />}
         <ToastContainer 
-          position="bottom-right" 
-          autoClose={3000}
+          position="bottom-center" 
+          autoClose={1000}
           theme="colored"
         />
       </div>
