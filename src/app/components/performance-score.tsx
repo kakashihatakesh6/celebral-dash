@@ -1,7 +1,43 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
+import { useEffect, useState } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent } from "@/app/components/ui/card"
 
 export function PerformanceScore() {
+  const [performanceData, setPerformanceData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const credentials = btoa('trial:assignment123');
+        const response = await fetch('http://3.111.196.92:8020/api/v1/sample_assignment_api_5/', {
+          headers: {
+            'Authorization': `Basic ${credentials}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setPerformanceData(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching performance data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <Card><CardContent>Loading...</CardContent></Card>;
+  }
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -16,20 +52,20 @@ export function PerformanceScore() {
                 r="56"
                 strokeWidth="8"
                 fill="none"
-                strokeDasharray={`${(78 * 351.8) / 100} 351.8`}
+                strokeDasharray={`${(performanceData?.score * 351.8) / 100} 351.8`}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-3xl font-bold">78</div>
+                <div className="text-3xl font-bold">{performanceData?.score || 0}</div>
                 <div className="text-xs text-muted-foreground">of 100 points</div>
               </div>
             </div>
           </div>
           <div className="text-center">
-            <div className="text-xl font-semibold">You&apos;re good!</div>
+            <div className="text-xl font-semibold">{performanceData?.message || "Loading..."}</div>
             <div className="text-sm text-muted-foreground max-w-[200px] mx-auto">
-              Your sales performance score is better than 80% other users
+              {performanceData?.description || "Loading performance data..."}
             </div>
           </div>
           <Button variant="link" size="sm" className="text-blue-500 border rounded-2xl">
