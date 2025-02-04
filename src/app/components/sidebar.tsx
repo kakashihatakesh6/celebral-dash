@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/app/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Settings, Users, Grid, LayoutGrid, Zap, MessageSquare, Webhook } from "lucide-react"
-import type React from "react" // Import React
+import type React from "react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 

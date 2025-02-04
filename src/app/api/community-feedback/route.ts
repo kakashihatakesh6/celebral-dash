@@ -18,7 +18,6 @@ export async function GET() {
     }
 
     const data = await response.json()
-    console.log("API Response:", data.length)
 
     if (!data || typeof data !== "object") {
       throw new Error("Invalid data received from API")

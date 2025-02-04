@@ -2,7 +2,6 @@
 "use client"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-// import { Progress } from "@/app/components/ui/progress"
 
 export function CommunityFeedback() {
   const [feedbackData, setFeedbackData] = useState<any>(null);

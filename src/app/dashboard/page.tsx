@@ -3,7 +3,6 @@
 import { ChevronDown } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { StatsCard } from "../components/stats-cards"
-// import { ComparisonChart } from "../components/comparison-chart"
 import { TopProducts } from "../components/top-products"
 import { PerformanceScore } from "../components/performance-score"
 import { CustomersByDevice } from "../components/customers-by-device"
