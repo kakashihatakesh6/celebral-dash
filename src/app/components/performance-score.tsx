@@ -14,7 +14,7 @@ export function PerformanceScore() {
       try {
         const credentials = btoa('trial:assignment123');
         console.log("cred =>", credentials);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_5/`, {
+        const response = await fetch(`${process.env.FASTAPI_URL}/api/v1/sample_assignment_api_5/`, {
           headers: {
             'Authorization': `Basic ${credentials}`,
           },

@@ -22,7 +22,7 @@ export default function Dashboard() {
         // Create base64 encoded credentials
         const credentials = btoa('trial:assignment123');
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_1/`, {
+        const response = await fetch(`${process.env.FASTAPI_URL}/api/v1/sample_assignment_api_1/`, {
           headers: {
             'Authorization': `Basic ${credentials}`,
           },

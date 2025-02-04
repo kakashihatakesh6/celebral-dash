@@ -7,7 +7,7 @@ export async function GET() {
     headers.set("Authorization", "Basic " + btoa(username))
     headers.set("Content-Type", "application/json")
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_4/`, {
+    const response = await fetch(`${process.env.FASTAPI_URL}/api/v1/sample_assignment_api_4/`, {
       method: "GET",
       headers: headers,
     })
