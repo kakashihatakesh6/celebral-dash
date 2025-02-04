@@ -15,25 +15,25 @@ const data = [
 export function CustomersByDevice() {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Customers by device</CardTitle>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">Customers by device</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[200px]">
+        <div className="h-[150px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <Line type="monotone" dataKey="web" stroke="#2563EB" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="offline" stroke="#60A5FA" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="web" stroke="#2563EB" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="offline" stroke="#60A5FA" strokeWidth={1.5} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center justify-between border-t pt-4 mt-4">
+        <div className="flex items-center justify-between border-t pt-2 mt-2">
           <div>
-            <div className="flex items-center gap-2">
-              <div className="h-3 w-3 rounded-sm bg-blue-600" />
-              <div className="text-sm font-medium">Web sales</div>
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-sm bg-blue-600" />
+              <div className="text-xs font-medium">Web sales</div>
             </div>
-            <div className="text-sm text-muted-foreground">1,304%</div>
+            <div className="text-xs text-muted-foreground">1,304%</div>
           </div>
           <div>
             <div className="flex items-center gap-2">

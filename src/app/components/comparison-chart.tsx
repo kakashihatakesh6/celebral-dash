@@ -22,56 +22,69 @@ export function ComparisonChart() {
 
   const filterDataByPeriod = (data: DataPoint[], period: string) => {
     const currentDate = new Date()
-    let hoursToShow: number
+    let monthsToShow: number
 
     switch (period) {
       case '6months':
-        hoursToShow = 12 // Show last 12 hours
+        monthsToShow = 6
         break
       case '12months':
-        hoursToShow = 18 // Show last 18 hours
+        monthsToShow = 12
         break
       case '24months':
-        hoursToShow = 24 // Show full 24 hours
+        monthsToShow = 24
         break
       default:
-        hoursToShow = 12
+        monthsToShow = 6
     }
 
-    // Create an array of hour intervals
-    const hours = []
-    for (let i = 0; i < hoursToShow; i++) {
-      const date = new Date(data[0].name)
-      date.setHours(date.getHours() + i)
-      hours.unshift({
-        hour: date.getHours(),
-        date: date
+    // Create an array of month intervals
+    const months = []
+    for (let i = 0; i < monthsToShow; i++) {
+      const date = new Date()
+      date.setMonth(date.getMonth() - i)
+      months.unshift({
+        month: date.getMonth(),
+        year: date.getFullYear()
       })
     }
 
-    // Create a map of existing data points grouped by hour
-    const dataMap = new Map()
+    // Group data by month and year
+    const monthlyData = new Map()
+    
     data.forEach(item => {
       const date = new Date(item.name)
-      const hour = date.getHours()
-      if (!dataMap.has(hour)) {
-        dataMap.set(hour, {
-          thisYear: [],
-          lastYear: []
+      const key = `${date.getFullYear()}-${date.getMonth()}`
+      
+      if (!monthlyData.has(key)) {
+        monthlyData.set(key, {
+          uniqueCount: [],
+          cumulativeTweets: []
         })
       }
-      const hourData = dataMap.get(hour)
-      hourData.thisYear.push(item.thisYear)
-      hourData.lastYear.push(item.lastYear)
+      
+      const entry = monthlyData.get(key)
+      entry.uniqueCount.push(item.thisYear)
+      entry.cumulativeTweets.push(item.lastYear)
     })
 
-    // Fill in missing hours and calculate averages
-    return hours.map(({ hour, date }) => {
-      const hourData = dataMap.get(hour) || { thisYear: [0], lastYear: [0] }
+    // Generate final data with averages
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    return months.map(({ month, year }) => {
+      const key = `${year}-${month}`
+      const monthData = monthlyData.get(key) || { uniqueCount: [0], cumulativeTweets: [0] }
+      
       return {
-        name: `${hour}:00`,
-        thisYear: Math.round(hourData.thisYear.reduce((a: any, b: any) => a + b, 0) / hourData.thisYear.length),
-        lastYear: Math.round(hourData.lastYear.reduce((a: any, b: any) => a + b, 0) / hourData.lastYear.length)
+        name: `${monthNames[month]} ${year}`,
+        thisYear: Math.round(
+          monthData.uniqueCount.reduce((sum: number, val: number) => sum + val, 0) / 
+          monthData.uniqueCount.length
+        ),
+        lastYear: Math.round(
+          monthData.cumulativeTweets.reduce((sum: number, val: number) => sum + val, 0) / 
+          monthData.cumulativeTweets.length
+        )
       }
     })
   }
@@ -79,33 +92,34 @@ export function ComparisonChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching data...")
         const response = await fetch("/api/get-data")
-
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
 
         const jsonData = await response.json()
-        console.log("Received data:", jsonData)
-
+        
         if (!Array.isArray(jsonData)) {
-          throw new Error("Invalid data received from API")
+          throw new Error("Invalid data format received from API")
         }
 
-        // Transform the API data into chart format
-        const transformedData = jsonData.map(item => {
-          const date = new Date(item.date2)
-          return {
-            name: date.toISOString(),
-            thisYear: item.unique_count,
-            lastYear: item.cumulative_tweets
-          }
-        })
+        // Transform API data to chart format
+        const transformedData = jsonData.map(item => ({
+          name: item.date2,
+          thisYear: Number(item.unique_count) || 0,
+          lastYear: Number(item.cumulative_tweets) || 0
+        }))
 
+        // Sort by date
+        transformedData.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
+
+        // Apply period filter
         const filteredData = filterDataByPeriod(transformedData, selectedPeriod)
-        console.log("Transformed data:", filteredData)
+        
+        if (filteredData.length === 0) {
+          throw new Error("No data available for the selected period")
+        }
+
         setData(filteredData)
         setLoading(false)
       } catch (err) {
@@ -149,6 +163,7 @@ export function ComparisonChart() {
         <CardTitle>Comparison</CardTitle>
         <Select 
           defaultValue="6months" 
+          value={selectedPeriod}
           onValueChange={(value) => setSelectedPeriod(value)}
         >
           <SelectTrigger className="w-[120px]">
@@ -165,18 +180,39 @@ export function ComparisonChart() {
         <div className="h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
-              <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+              <XAxis 
+                dataKey="name" 
+                stroke="#888888" 
+                fontSize={12} 
+                tickLine={false} 
+                axisLine={false}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+              />
               <YAxis
                 stroke="#888888"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `${value}k`}
+                tickFormatter={(value) => `${value}`} // Removed 'k' suffix
               />
               <Tooltip />
               <Legend />
-              <Bar dataKey="lastYear" fill="hsl(216, 80%, 85%)" radius={[4, 4, 0, 0]} name="Last year" />
-              <Bar dataKey="thisYear" fill="hsl(216, 80%, 50%)" radius={[4, 4, 0, 0]} name="This year" />
+              <Bar 
+                dataKey="lastYear" 
+                fill="hsl(216, 80%, 85%)" 
+                radius={[4, 4, 0, 0]} 
+                name="Last year"
+                isAnimationActive={false} // Disable animation for debugging
+              />
+              <Bar 
+                dataKey="thisYear" 
+                fill="hsl(216, 80%, 50%)" 
+                radius={[4, 4, 0, 0]} 
+                name="This year"
+                isAnimationActive={false} // Disable animation for debugging
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -43,29 +43,29 @@ export function PerformanceScore() {
       <CardContent className="pt-6">
         <div className="flex flex-col items-center gap-2">
           <div className="relative">
-            <svg className="h-32 w-32 rotate-[-90deg]">
-              <circle className="stroke-muted" cx="64" cy="64" r="56" strokeWidth="16" fill="none" />
+            <svg className="h-24 w-24 rotate-[-90deg]">
+              <circle className="stroke-muted" cx="48" cy="48" r="42" strokeWidth="12" fill="none" />
               <circle
                 className="stroke-blue-500"
-                cx="64"
-                cy="64"
-                r="56"
-                strokeWidth="8"
+                cx="48"
+                cy="48"
+                r="42"
+                strokeWidth="6"
                 fill="none"
-                strokeDasharray={`${(performanceData?.score * 351.8) / 100} 351.8`}
+                strokeDasharray={`${(performanceData?.score * 263.8) / 100} 263.8`}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-3xl font-bold">{performanceData?.score || 0}</div>
+                <div className="text-2xl font-bold">{performanceData?.score || 78}</div>
                 <div className="text-xs text-muted-foreground">of 100 points</div>
               </div>
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-xl font-semibold">{performanceData?.message || "Loading..."}</div>
-            <div className="text-sm text-muted-foreground max-w-[200px] mx-auto">
-              {performanceData?.description || "Loading performance data..."}
+          <div className="text-start">
+            <div className="text-lg font-semibold">{performanceData?.message || `You're good!`}</div>
+            <div className="text-xs text-muted-foreground max-w-[180px] mx-auto">
+              {performanceData?.description || "Your sales performance score is better than 80% other users"}
             </div>
           </div>
           <Button variant="link" size="sm" className="text-blue-500 border rounded-2xl">
