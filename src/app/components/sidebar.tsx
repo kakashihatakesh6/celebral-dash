@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/app/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
-import { Settings, Users, Grid, LayoutGrid, Zap, MessageSquare, ChevronLeft } from "lucide-react"
+import { Settings, Users, Grid, LayoutGrid, Zap, MessageSquare, Webhook } from "lucide-react"
 import type React from "react" // Import React
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -11,11 +11,11 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <div className={cn("flex h-full w-[240px] flex-col bg-zinc-50", className)}>
       {/* Header */}
-      <div className="flex h-14 items-center gap-2 border-b px-4">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <ChevronLeft className="h-4 w-4" />
+      <div className="flex h-14 items-center gap-2 px-4">
+        <Button className="h-8 w-8">
+          <Webhook className="h-full w-full text-2xl" />
         </Button>
-        <span className="text-base font-medium">Salesway</span>
+        <span className="text-xl font-bold">Salesway</span>
       </div>
 
       {/* Navigation */}

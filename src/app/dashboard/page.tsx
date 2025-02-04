@@ -3,13 +3,14 @@
 import { ChevronDown } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { StatsCard } from "../components/stats-cards"
-import { ComparisonChart } from "../components/comparison-chart"
+// import { ComparisonChart } from "../components/comparison-chart"
 import { TopProducts } from "../components/top-products"
 import { PerformanceScore } from "../components/performance-score"
 import { CustomersByDevice } from "../components/customers-by-device"
 import { CommunityFeedback } from "../components/community-feedback"
 import { Sidebar } from "../components/sidebar"
 import { useEffect, useState } from "react"
+import { ComparisonChart } from "../components/new-chart/comparison-chart"
 
 export default function Dashboard() {
   const [apiData, setApiData] = useState<any>(null);
@@ -21,7 +22,7 @@ export default function Dashboard() {
         // Create base64 encoded credentials
         const credentials = btoa('trial:assignment123');
 
-        const response = await fetch('http://3.111.196.92:8020/api/v1/sample_assignment_api_1/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_1/`, {
           headers: {
             'Authorization': `Basic ${credentials}`,
           },
@@ -61,11 +62,11 @@ export default function Dashboard() {
     <div className="flex h-screen bg-gray-100">
       <Sidebar className="flex-shrink-0" />
       <div className="flex flex-col flex-grow overflow-hidden">
-        <header className="flex h-14 items-center justify-between border-b bg-white px-6">
-          <h1 className="text-xl font-semibold">Dashboard</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Compare to</span>
-            <Button variant="ghost" size="sm" className="text-sm font-normal">
+        <header className="flex h-40 items-center justify-between border-b bg-white px-8">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <div className="flex items-center gap-2 space-x-6">
+            <span className="text-base font-semibold text-muted-foreground">Compare to</span>
+            <Button variant="ghost" size="sm" className="text-sm font-semibold border-2 rounded-full px-4 py-3">
               Last year <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -90,6 +91,7 @@ export default function Dashboard() {
               />
             </div>
             {/* <ComparisonChart data={apiData?.chartData} /> */}
+            {/* <ComparisonChart /> */}
             <ComparisonChart />
             <TopProducts />
           </div>

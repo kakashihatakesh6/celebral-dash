@@ -1,12 +1,13 @@
+import { username } from "@/app/utils/global"
 import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
     const headers = new Headers()
-    headers.set("Authorization", "Basic " + btoa("trial:assignment123"))
+    headers.set("Authorization", "Basic " + btoa(username))
     headers.set("Content-Type", "application/json")
 
-    const response = await fetch("http://3.111.196.92:8020/api/v1/sample_assignment_api_4/", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_4/`, {
       method: "GET",
       headers: headers,
     })
@@ -17,7 +18,7 @@ export async function GET() {
     }
 
     const data = await response.json()
-    console.log("API Response:", data)
+    console.log("API Response:", data.length)
 
     if (!data || typeof data !== "object") {
       throw new Error("Invalid data received from API")

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent } from "@/app/components/ui/card"
 
+
 export function PerformanceScore() {
   const [performanceData, setPerformanceData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,7 +13,8 @@ export function PerformanceScore() {
     const fetchData = async () => {
       try {
         const credentials = btoa('trial:assignment123');
-        const response = await fetch('http://3.111.196.92:8020/api/v1/sample_assignment_api_5/', {
+        console.log("cred =>", credentials);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/v1/sample_assignment_api_5/`, {
           headers: {
             'Authorization': `Basic ${credentials}`,
           },
@@ -43,20 +45,20 @@ export function PerformanceScore() {
       <CardContent className="pt-6">
         <div className="flex flex-col items-center gap-2">
           <div className="relative">
-            <svg className="h-24 w-24 rotate-[-90deg]">
-              <circle className="stroke-muted" cx="48" cy="48" r="42" strokeWidth="12" fill="none" />
+            <svg className="h-28 w-28 rotate-[-90deg]">
+              <circle className="stroke-muted" cx="48" cy="48" r="52" strokeWidth="12" fill="none" />
               <circle
                 className="stroke-blue-500"
                 cx="48"
                 cy="48"
-                r="42"
+                r="45"
                 strokeWidth="6"
                 fill="none"
                 strokeDasharray={`${(performanceData?.score * 263.8) / 100} 263.8`}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
+              <div className="text-center pr-3">
                 <div className="text-2xl font-bold">{performanceData?.score || 78}</div>
                 <div className="text-xs text-muted-foreground">of 100 points</div>
               </div>

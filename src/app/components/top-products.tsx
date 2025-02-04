@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 const products = [
   {
     id: 1,
-    name: "Camera Mt 360°",
+    name: "Camera Mi 360°",
     sold: 432,
     price: "$120",
     revenue: "$51,840",
@@ -50,7 +50,7 @@ export function TopProducts() {
   return (
     <Card className="bg-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-        <CardTitle className="text-base font-medium">Top Products</CardTitle>
+        <CardTitle className="text-2xl font-bold">Top Products</CardTitle>
         <Button variant="link" className="text-sm font-normal text-blue-600 p-0 h-auto">
           Full results
         </Button>
@@ -59,11 +59,11 @@ export function TopProducts() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-xs font-medium text-muted-foreground pl-6">Product</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground">Sold amount</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground">Unit price</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground">Revenue</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground pr-6">Rating</TableHead>
+              <TableHead className="text-xs font-bold text-muted-foreground pl-6">Product</TableHead>
+              <TableHead className="text-xs font-bold text-muted-foreground">Sold amount</TableHead>
+              <TableHead className="text-xs font-bold text-muted-foreground">Unit price</TableHead>
+              <TableHead className="text-xs font-bold text-muted-foreground">Revenue</TableHead>
+              <TableHead className="text-xs font-bold text-muted-foreground pr-6">Rating</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -79,12 +79,12 @@ export function TopProducts() {
                     <span className="font-medium">{product.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>{product.sold}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.revenue}</TableCell>
+                <TableCell><span className="font-semibold text-zinc-700">{product.sold}</span></TableCell>
+                <TableCell><span className="font-semibold text-zinc-700">{product.price}</span></TableCell>
+                <TableCell><span className="font-semibold text-zinc-700">{product.revenue}</span></TableCell>
                 <TableCell className="pr-6">
-                  <div className="flex items-center gap-1 text-amber-400">
-                    <span>★</span>
+                  <div className="flex items-center gap-1 text-zinc-700 font-semibold">
+                    <span className="text-amber-400">★</span>
                     {product.rating.toFixed(2)}
                   </div>
                 </TableCell>
