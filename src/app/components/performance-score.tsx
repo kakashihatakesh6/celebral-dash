@@ -12,13 +12,7 @@ export function PerformanceScore() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const credentials = btoa('trial:assignment123');
-        console.log("cred =>", credentials);
-        const response = await fetch(`${process.env.FASTAPI_URL}/api/v1/sample_assignment_api_5/`, {
-          headers: {
-            'Authorization': `Basic ${credentials}`,
-          },
-        });
+        const response = await fetch("/api/get-performance")
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -35,6 +29,7 @@ export function PerformanceScore() {
 
     fetchData();
   }, []);
+
 
   if (isLoading) {
     return <Card><CardContent>Loading...</CardContent></Card>;

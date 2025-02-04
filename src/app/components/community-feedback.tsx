@@ -11,12 +11,7 @@ export function CommunityFeedback() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const credentials = btoa('trial:assignment123');
-        const response = await fetch(`${process.env.FASTAPI_URL}/api/v1/sample_assignment_api_5/`, {
-          headers: {
-            'Authorization': `Basic ${credentials}`,
-          },
-        });
+        const response = await fetch("/api/community-feedback")
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
