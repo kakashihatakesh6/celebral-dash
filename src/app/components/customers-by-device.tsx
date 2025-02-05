@@ -1,7 +1,7 @@
 "use client"
 
 import { LineChart, Line, ResponsiveContainer } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent } from "@/app/components/ui/card"
 
 const data = [
   { month: "Jan", web: 2000, offline: 1000 },
@@ -15,10 +15,10 @@ const data = [
 export function CustomersByDevice() {
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Customers by device</CardTitle>
-      </CardHeader>
       <CardContent>
+        <div className="font-semibold leading-none tracking-tight pt-3">
+          Customers by device
+        </div>
         <div className="h-[150px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -27,7 +27,7 @@ export function CustomersByDevice() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center justify-between border-t pt-2 mt-2">
+        <div className="flex items-center justify-between border-t mt-2">
           <div>
             <div className="flex items-center gap-1">
               <div className="h-2 w-2 rounded-sm bg-blue-600" />
@@ -36,7 +36,7 @@ export function CustomersByDevice() {
             <div className="text-xs text-muted-foreground">1,304%</div>
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <div className="h-3 w-3 rounded-sm bg-blue-300" />
               <div className="text-sm font-medium">Offline selling</div>
             </div>

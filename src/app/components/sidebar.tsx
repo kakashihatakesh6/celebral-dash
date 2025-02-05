@@ -9,7 +9,8 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function Sidebar({ className }: SidebarProps) {
   return (
-    <div className={cn("flex h-full w-[240px] flex-col bg-zinc-50", className)}>
+    <div className={cn("flex h-full w-[240px] flex-col bg-gray-100", className)}>
+    {/* <div className={cn("flex h-full w-[240px] flex-col bg-zinc-50", className)}> */}
       {/* Header */}
       <div className="flex h-14 items-center gap-2 px-4">
         <Button className="h-8 w-8">

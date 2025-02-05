@@ -13,7 +13,7 @@ interface StatsCardProps {
 export function StatsCard({ title, value, change }: StatsCardProps) {
   return (
     <Card className="bg-white">
-      <CardContent className="p-6">
+      <CardContent className="px-6 py-2">
         <div className="flex justify-between items-start">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <span

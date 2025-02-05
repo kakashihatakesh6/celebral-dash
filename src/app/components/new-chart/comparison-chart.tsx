@@ -75,7 +75,7 @@ export function ComparisonChart() {
     )
 
   return (
-    <Card className="bg-white shadow-lg rounded-lg p-4">
+    <Card className="bg-white shadow-lg rounded-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-lg font-semibold">Comparison</CardTitle>
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>

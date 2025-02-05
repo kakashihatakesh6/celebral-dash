@@ -51,7 +51,7 @@ export function TopProducts() {
     <Card className="bg-white">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-2xl font-bold">Top Products</CardTitle>
-        <Button variant="link" className="text-sm font-normal text-blue-600 p-0 h-auto">
+        <Button variant="link" className="text-base font-semibold text-blue-600 p-0 h-auto rounded-full border px-4 py-2">
           Full results
         </Button>
       </CardHeader>

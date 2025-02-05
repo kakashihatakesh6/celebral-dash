@@ -19,6 +19,7 @@ export function PerformanceScore() {
         }
 
         const data = await response.json();
+        console.log("performance-data", data);
         setPerformanceData(data);
         setIsLoading(false);
       } catch (error) {
@@ -37,7 +38,7 @@ export function PerformanceScore() {
 
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent className="">
         <div className="flex flex-col items-center gap-2">
           <div className="relative">
             <svg className="h-28 w-28 rotate-[-90deg]">
@@ -60,7 +61,7 @@ export function PerformanceScore() {
             </div>
           </div>
           <div className="text-start">
-            <div className="text-lg font-semibold">{performanceData?.message || `You're good!`}</div>
+            <div className="text-lg font-semibold">{performanceData?.title+'!' || `You're good!`}</div>
             <div className="text-xs text-muted-foreground max-w-[180px] mx-auto">
               {performanceData?.description || "Your sales performance score is better than 80% other users"}
             </div>
