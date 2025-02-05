@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Github, Loader2, Slack } from 'lucide-react';
 
 const Login = () => {
-  const [username, setUsername] = useState('trial');
+  const [user_name, setUser_name] = useState('trial');
   const [password, setPassword] = useState('assignment123');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false)
@@ -24,14 +24,14 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://3.111.196.92:8020/api/v1/login/', {
-        method: 'POST',
+      const response = await fetch("/api/login", {
+        method: "POST",
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password, email: "testnikhil@gmai.com", phone_number: "6268885174", input_code: "1234" }),
-      });
-
+        body: JSON.stringify({ user_name, password })
+      })
+  
       if (!response.ok) {
         throw new Error('Login failed');
       }
@@ -74,7 +74,7 @@ const Login = () => {
           </div> */}
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" type="text" onChange={(e) => { setUsername(e.target.value) }} placeholder="nikhil123" required />
+              <Input id="username" type="text" onChange={(e) => { setUser_name(e.target.value) }} placeholder="nikhil123" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
